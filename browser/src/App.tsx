@@ -1,53 +1,41 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
+import { useState, useRef, useEffect } from "react";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
+export default function App() {
+    const [loading, setLoading] = useState(false)
+    const [url, setUrl] = useState("")
+    const inputRef = useRef<HTMLInputElement>()
 
-  return (
-    <div className="container">
-      <h1>Welcome to Tauri!</h1>
+    function fixUrl(urlRaw: string) {
+        if (!urlRaw.startsWith("https://")) urlRaw = "https://" + urlRaw;
+        return urlRaw
+    }
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+    function loadUrl() {
+        const rawUrl = inputRef.current?.value
+        setUrl(fixUrl(rawUrl))
+    }
 
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+    useEffect(() => {
+        console.log(url)
+        url&&window.location.assign(url)
+    }, [url])
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+    return <div className="min-h-[100vh] bg-black/10 flex items-center justify-center flex-col p-5 gap-2">
+        <div className="text-3xl my-5">
+            Anti-Sus Browser
+        </div>
+        <input placeholder="Enter a URL you want to visit" className="p-2 px-3 text-black outline-none rounded-xl bg-transparent border border-black/30 placeholder-black/30 w-full mx-10"
+            ref={inputRef}
+            onKeyDown={e => {
+                if (e.key == "Enter") {
+                    let urlRaw: string = e.target.value;
+                    setUrl((fixUrl(urlRaw)))
+                }
+            }}
         />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p>{greetMsg}</p>
+        <button className="bg-green-300 text-black p-2 px-4 rounded-xl hover:scale-105 active:scale-95 transition-all duration-200"
+            onClick={loadUrl}
+        >GO</button>
     </div>
-  );
 }
-
-export default App;
