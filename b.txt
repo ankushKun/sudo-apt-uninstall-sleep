@@ -1,0 +1,32 @@
+import { useState } from "react";
+import { FaRegArrowAltCircleRight, FaRegArrowAltCircleLeft } from "react-icons/fa";
+import { FiLoader } from "react-icons/fi";
+
+
+export default function Browser() {
+    const [loading, setLoading] = useState(false)
+    const [url, setUrl] = useState("")
+
+    return <div className="min-h-[100vh] bg-black/90 text-white">
+        <div className="w-full p-2 bg-black/20 flex h-[40px] items-center gap-2">
+            <button>
+                <FaRegArrowAltCircleLeft size={25} />
+            </button>
+            <button>
+                <FaRegArrowAltCircleRight size={25} />
+            </button>
+            <input placeholder="Enter URL" className="p-1 text-white outline-none rounded-xl bg-transparent border border-white/30 w-full mx-10"
+                onKeyDown={e => {
+                    if (e.key == "Enter") {
+                        console.log("Loading ", e.target.value!)
+                        setUrl(e.target.value!)
+                    }
+                }}
+            />
+            <div>
+                <FiLoader size={20} className={`animate-spin ${loading ? "visible" : "invisible"}`} />
+            </div>
+        </div>
+        <iframe is="x-frame-bypass" src={url} className="w-full min-h-[calc(100vh-40px)]" />
+    </div>
+}
