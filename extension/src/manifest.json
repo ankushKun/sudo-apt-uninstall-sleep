@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Anti Sus Browsing",
   "description": "A chrome extension to detect sus activity in online browsing",
+  "permissions":["storage","tabs  "],
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
