@@ -1,25 +1,21 @@
 import React from 'react';
 import logo from '../../assets/img/logo.svg';
 import Greetings from '../../containers/Greetings/Greetings';
+import { StatsRing } from '../components/StatsRing';
 import './Popup.css';
 
 const Popup = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+      <div className="App-header">
+        {/* <img src={logo} className="App-logo" alt="logo" /> */}
+        <StatsRing/>
         <p>
-          Edit <code>src/pages/Popup/Popup.jsx</code> and save to reload.
+        Anti Sus Browsing <br/>
+        A chrome extension to detect sus activity in online browsing
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
-      </header>
+      
+      </div>
     </div>
   );
 };
