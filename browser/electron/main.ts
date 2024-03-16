@@ -1,6 +1,7 @@
-import { app, BrowserWindow, Menu, MenuItem } from 'electron'
+import { app, BrowserWindow, ipcRenderer, Menu, MenuItem, Notification } from 'electron'
 import { globalShortcut } from 'electron'
 import path from 'node:path'
+import { ipcMain } from "electron"
 
 // The built directory structure
 //
@@ -15,30 +16,72 @@ process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
 
-let win: BrowserWindow | null
+let web: BrowserWindow | null
+let chat: BrowserWindow | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 function createWindow() {
-    win = new BrowserWindow({
+    chat = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
         },
+        resizable: false,
+        width: 300,
+        height: 300,
+        alwaysOnTop: true,
+        transparent: true,
+        backgroundColor: "white",
+        titleBarStyle: "hidden",
+        frame: false
     })
 
     // Test active push message to Renderer-process.
-    win.webContents.on('did-finish-load', () => {
-        win?.webContents.send('main-process-message', (new Date).toLocaleString())
-        console.log("LOADED")
+
+    ipcMain.handle("openUrl", (e, l) => {
+        console.log(l)
+        web?.destroy()
+        web = new BrowserWindow({
+            icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+            },
+            show: false,
+        })
+
+        web.webContents.on('did-finish-load', () => {
+            web?.webContents.send('main-process-message', (new Date).toLocaleString())
+        })
+
+        web.webContents.on('dom-ready', () => {
+            const curl = web?.webContents.getURL()
+            chat?.webContents.send('urlUpdated', curl)
+            web?.webContents.executeJavaScript(`function gethtml () {
+    return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
+    }
+    gethtml();`).then(html => {
+                console.log(html)
+                    new Notification({title:"Sus activity detected",body:"uwuuwuwuwuu"}).show()
+                    chat?.webContents.send('isSus', true)
+            })
+
+            console.log("LOADED")
+        })
+
+        web.maximize()
+        web?.loadURL(l)
+        web?.show()
+        return "OK"
     })
 
 
+    chat.setTitle("Anti-Sus Browser")
     if (VITE_DEV_SERVER_URL) {
-        win.loadURL(VITE_DEV_SERVER_URL)
+        chat.loadURL(VITE_DEV_SERVER_URL)
     } else {
         // win.loadFile('dist/index.html')
-        win.loadFile(path.join(process.env.DIST, 'index.html'))
+        chat.loadFile(path.join(process.env.DIST, 'index.html'))
     }
 }
 
@@ -48,7 +91,7 @@ function createWindow() {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit()
-        win = null
+        web = null
     }
 })
 
@@ -62,11 +105,11 @@ app.on('activate', () => {
 
 
 app.whenReady().then(() => {
-    globalShortcut.register("CommandOrControl+/", () => win?.loadURL(VITE_DEV_SERVER_URL))
-    globalShortcut.register("CommandOrControl+.", () => {
-        win?.webContents.executeJavaScript(`function gethtml () {
-    return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
-    }
-    gethtml();`).then(html => console.log(html))
-    })
+    // globalShortcut.register("CommandOrControl+/", () => win?.loadURL(VITE_DEV_SERVER_URL))
+    // globalShortcut.register("CommandOrControl+.", () => {
+    //     win?.webContents.executeJavaScript(`function gethtml () {
+    // return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
+    // }
+    // gethtml();`).then(html => console.log(html))
+    // })
 }).then(createWindow)
