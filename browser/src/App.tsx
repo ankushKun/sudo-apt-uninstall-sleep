@@ -13,7 +13,8 @@ export default function App() {
     const inputRef = useRef<HTMLInputElement>()
 
     function fixUrl(urlRaw: string) {
-        if (!urlRaw.startsWith("https://")) urlRaw = "https://" + urlRaw;
+        if (urlRaw.startsWith("http://")) urlRaw.replace("http://","https://")
+        else if (!urlRaw.startsWith("https://")) urlRaw = "https://" + urlRaw;
         return urlRaw
     }
 

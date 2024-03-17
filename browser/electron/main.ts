@@ -5,6 +5,9 @@ import { ipcMain } from "electron"
 import arweave from "arweave"
 import { message, results, createDataItemSigner } from "@permaweb/aoconnect"
 import * as crypto from "crypto"
+import axios from "axios"
+
+const BACKEND_BASE = "http://192.168.235.116:1240"
 
 // The built directory structure
 //
@@ -81,14 +84,30 @@ function createWindow() {
             web?.webContents.send('main-process-message', (new Date).toLocaleString())
         })
 
-        web.webContents.on('dom-ready', () => {
+        web.webContents.on('dom-ready', async () => {
             const curl = web?.webContents.getURL()
             chat?.webContents.send('urlUpdated', curl)
+
+            const sussy = await axios.post(BACKEND_BASE + "/check", { url: curl })
+            const isSus = sussy.data.split("\n")[0].split(" ").reverse()[0];
+            console.log(isSus)
+            if (isSus == 1) {
+                new Notification({ title: "Suspicious activity detected", body: "Please stay alert" }).show()
+                chat?.webContents.send('isSus', true)
+            }else{
+                chat?.webContents.send('isSus', false)
+            }
+
+            // html
             web?.webContents.executeJavaScript(`function gethtml () {
     return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
     }
-    gethtml();`).then(html => {
-                console.log(html)
+    gethtml();`).then(async (html) => {
+                // console.log(html)
+
+
+                const htmlres = await axios.post(BACKEND_BASE + "/check_html", { html })
+                console.log(htmlres.data)
                 // const mid = message({
                 //     process: "rFEI-vxph87d7YmdOTeWX1im1Q6_fSvtSYdrRxlwsvw",
                 //     signer: jwk,
@@ -99,8 +118,6 @@ function createWindow() {
                 //     data: ""
                 // }).then(r => console.log(r))
 
-                new Notification({ title: "Suspicious activity detected", body: "Please stay alert" }).show()
-                chat?.webContents.send('isSus', true)
             })
 
             console.log("LOADED")

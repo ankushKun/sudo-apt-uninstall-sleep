@@ -12,6 +12,7 @@
     "@google/generative-ai": "^0.3.0",
     "@permaweb/aoconnect": "^0.0.48",
     "arweave": "^1.14.4",
+    "axios": "^1.6.8",
     "crypto": "^1.0.1",
     "electron-as-browser": "^1.0.0",
     "react": "^18.2.0",
