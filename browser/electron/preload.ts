@@ -3,7 +3,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
     openUrl: (u:string)=>ipcRenderer.invoke("openUrl",u),
-    on:(e:any,f:any)=>ipcRenderer.on(e,f)
+    on:(e:any,f:any)=>ipcRenderer.on(e,f),
+    loadSumm:()=>ipcRenderer.invoke("summary-load")
 })
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
