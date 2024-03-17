@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import Chat from "./chat";
+import Domstat from "./domstat"
 import { PiRobotFill } from "react-icons/pi";
 import { MdAssuredWorkload } from "react-icons/md";
+import { FaInfoCircle } from "react-icons/fa";
+import axios from "axios"
 
 
 
@@ -11,7 +14,9 @@ export default function App() {
     const [curl, setCurl] = useState("")
     const [isSus, setIsSus] = useState(false)
     const [chatOpen, setChatOpen] = useState(false)
+    const [domOpen, setDomOpen] = useState(false)
     const [summary, setSummary] = useState("")
+    const [stats, setStats] = useState({})
 
     const inputRef = useRef<HTMLInputElement>()
 
@@ -32,6 +37,13 @@ export default function App() {
     useEffect(() => {
         if (!url) return
         console.log(url)
+        const whois = "https://api.api-ninjas.com/v1/whois?domain="
+        const domainFixed = url.replace("https://", "").replace("http://", "").replace("://", "")
+        axios.get(whois + domainFixed, { headers: { "X-api-key": "XO1iqd3CLYl3dSoQO/dKSw==rt3bXWIlb0PYjQ4h" } })
+            .then(r =>{
+                console.log(r.data)
+                setStats(r.data)
+            })
         // url&&window.location.assign(url)
         // ipcRenderer.invoke("openUrl", url)
         window.ipcRenderer.openUrl(url)
@@ -61,13 +73,14 @@ export default function App() {
     return <div className="min-h-[100vh] bg-black/10 flex text-center items-center justify-between flex-col p-2 gap-2 rounded-xl">
         <button className="absolute top-1 right-1 cursor-pointer" onClick={() => setChatOpen(!chatOpen)}><PiRobotFill size={28} className="transition-all duration-200 hover:scale-105 active:scale-95" /></button>
         <button className="absolute top-8 right-1 cursor-pointer" onClick={() => loadSummary()}><MdAssuredWorkload size={28} className="transition-all duration-200 hover:scale-105 active:scale-95" /></button>
+        <button className="absolute top-16 right-1 cursor-pointer" onClick={() => setDomOpen(!domOpen)}><FaInfoCircle size={28} className="transition-all duration-200 hover:scale-105 active:scale-95" /></button>
         <div className="text-3xl">
             AntiSus Browser
             <div className="text-black/50 text-sm font-mono">
                 {curl}
             </div>
         </div>
-        {!chatOpen ? <>
+        {!chatOpen && !domOpen ? <>
             {isSus ? <> <div className="font-bold text-red-500 text-xl animate-pulse bg-yellow-400 w-full rounded-lg p-2">
                 SUSPICIOUS ACTIVITY<br />DETECTED 📢🚨
             </div>
@@ -90,6 +103,10 @@ export default function App() {
                     onClick={loadUrl}
                 >GO</button>
             </div>
-        </> : <><Chat /></>}
+        </> : <>
+            {domOpen ? <Domstat stats={stats} /> :
+                <Chat />}
+
+        </>}
     </div>
 }

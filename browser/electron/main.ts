@@ -65,7 +65,7 @@ function createWindow() {
     // Test active push message to Renderer-process.
 
 
-    ipcMain.handle("summary-load",async (_, __) => {
+    ipcMain.handle("summary-load", async (_, __) => {
         const url = web?.webContents.getURL()
         const sussy_html = await axios.post(BACKEND_BASE + "/check_html", { url })
         console.log(sussy_html.data)
@@ -84,6 +84,11 @@ function createWindow() {
             },
             show: false,
         })
+
+        // const whois = "https://api.api-ninjas.com/v1/whois?domain="
+        // const domainFixed = l.replace("https://", "").replace("http://", "").replace("://", "")
+        // axios.get(whois + domainFixed, { headers: { "X-api-key": "XO1iqd3CLYl3dSoQO/dKSw==rt3bXWIlb0PYjQ4h" } })
+        //     .then(r => console.log(r.data)).catch(e => console.log("whois error", e))
 
         web.on('closed', () => {
             chat?.webContents.send('isSus', false)
@@ -107,11 +112,6 @@ function createWindow() {
             } else {
                 chat?.webContents.send('isSus', false)
             }
-
-
-
-
-
 
 
             // html
