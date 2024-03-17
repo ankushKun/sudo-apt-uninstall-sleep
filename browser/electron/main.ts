@@ -1,7 +1,10 @@
-import { app, BrowserWindow, ipcRenderer, Menu, MenuItem, Notification } from 'electron'
-import { globalShortcut } from 'electron'
+import { app, BrowserWindow, Notification } from 'electron'
 import path from 'node:path'
+import fs from "fs"
 import { ipcMain } from "electron"
+import arweave from "arweave"
+import { message, results, createDataItemSigner } from "@permaweb/aoconnect"
+import * as crypto from "crypto"
 
 // The built directory structure
 //
@@ -14,6 +17,24 @@ import { ipcMain } from "electron"
 // │
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
+
+const ar = arweave.init({
+    host: 'arweave.net',
+    port: 443,
+    protocol: 'https'
+});
+
+let jwk: any;
+let signer:any;
+
+const arwallet_path = path.join(__dirname, "/.anti-sus.json")
+if (!fs.existsSync(arwallet_path)) {
+    ar.wallets.generate().then((key) => {
+        jwk = key
+        fs.writeFile(arwallet_path, JSON.stringify(key), (r) => console.log(r))
+        // signer = createDataItemSigner(jwk)
+    })
+}
 
 
 let web: BrowserWindow | null
@@ -29,7 +50,8 @@ function createWindow() {
         },
         resizable: false,
         width: 300,
-        height: 300,
+        height: 350,
+        maximizable:false,
         alwaysOnTop: true,
         transparent: true,
         backgroundColor: "white",
@@ -39,7 +61,7 @@ function createWindow() {
 
     // Test active push message to Renderer-process.
 
-    ipcMain.handle("openUrl", (e, l) => {
+    ipcMain.handle("openUrl", (_, l) => {
         console.log(l)
         web?.destroy()
         web = new BrowserWindow({
@@ -62,8 +84,18 @@ function createWindow() {
     }
     gethtml();`).then(html => {
                 console.log(html)
-                    new Notification({title:"Sus activity detected",body:"uwuuwuwuwuu"}).show()
-                    chat?.webContents.send('isSus', true)
+                // const mid = message({
+                //     process: "rFEI-vxph87d7YmdOTeWX1im1Q6_fSvtSYdrRxlwsvw",
+                //     signer: jwk,
+                //     tags: [{
+                //         name: "Action",
+                //         value: "Register"
+                //     }],
+                //     data: ""
+                // }).then(r => console.log(r))
+
+                new Notification({ title: "Suspicious activity detected", body: "Please stay alert" }).show()
+                chat?.webContents.send('isSus', true)
             })
 
             console.log("LOADED")
@@ -104,7 +136,7 @@ app.on('activate', () => {
 })
 
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
     // globalShortcut.register("CommandOrControl+/", () => win?.loadURL(VITE_DEV_SERVER_URL))
     // globalShortcut.register("CommandOrControl+.", () => {
     //     win?.webContents.executeJavaScript(`function gethtml () {
@@ -112,4 +144,5 @@ app.whenReady().then(() => {
     // }
     // gethtml();`).then(html => console.log(html))
     // })
+
 }).then(createWindow)

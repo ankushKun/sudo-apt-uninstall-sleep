@@ -8,6 +8,6 @@ html{
     height: 100%;
 }
 
-input,button{
+input,button, .scroll{
     -webkit-app-region:none;
 }
