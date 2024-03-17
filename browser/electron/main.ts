@@ -25,7 +25,7 @@ const ar = arweave.init({
 });
 
 let jwk: any;
-let signer:any;
+let signer: any;
 
 const arwallet_path = path.join(__dirname, "/.anti-sus.json")
 if (!fs.existsSync(arwallet_path)) {
@@ -51,7 +51,7 @@ function createWindow() {
         resizable: false,
         width: 300,
         height: 350,
-        maximizable:false,
+        maximizable: false,
         alwaysOnTop: true,
         transparent: true,
         backgroundColor: "white",
@@ -70,6 +70,11 @@ function createWindow() {
                 preload: path.join(__dirname, 'preload.js'),
             },
             show: false,
+        })
+
+        web.on('closed', () => {
+            chat?.webContents.send('isSus', false)
+
         })
 
         web.webContents.on('did-finish-load', () => {
