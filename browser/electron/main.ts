@@ -64,6 +64,16 @@ function createWindow() {
 
     // Test active push message to Renderer-process.
 
+
+    ipcMain.handle("summary-load",async (_, __) => {
+        const url = web?.webContents.getURL()
+        const sussy_html = await axios.post(BACKEND_BASE + "/check_html", { url })
+        console.log(sussy_html.data)
+        chat?.webContents.send('summary', sussy_html.data)
+
+
+    })
+
     ipcMain.handle("openUrl", (_, l) => {
         console.log(l)
         web?.destroy()
@@ -94,31 +104,37 @@ function createWindow() {
             if (isSus == 1) {
                 new Notification({ title: "Suspicious activity detected", body: "Please stay alert" }).show()
                 chat?.webContents.send('isSus', true)
-            }else{
+            } else {
                 chat?.webContents.send('isSus', false)
             }
 
+
+
+
+
+
+
             // html
-            web?.webContents.executeJavaScript(`function gethtml () {
-    return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
-    }
-    gethtml();`).then(async (html) => {
-                // console.log(html)
+            // web?.webContents.executeJavaScript(`function gethtml () {
+            // return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
+            // }
+            // gethtml();`).then(async (html) => {
+            //     // console.log(html)
 
 
-                const htmlres = await axios.post(BACKEND_BASE + "/check_html", { html })
-                console.log(htmlres.data)
-                // const mid = message({
-                //     process: "rFEI-vxph87d7YmdOTeWX1im1Q6_fSvtSYdrRxlwsvw",
-                //     signer: jwk,
-                //     tags: [{
-                //         name: "Action",
-                //         value: "Register"
-                //     }],
-                //     data: ""
-                // }).then(r => console.log(r))
+            //     const htmlres = await axios.post(BACKEND_BASE + "/check_html", { html })
+            //     console.log(htmlres.data)
+            // const mid = message({
+            //     process: "rFEI-vxph87d7YmdOTeWX1im1Q6_fSvtSYdrRxlwsvw",
+            //     signer: jwk,
+            //     tags: [{
+            //         name: "Action",
+            //         value: "Register"
+            //     }],
+            //     data: ""
+            // }).then(r => console.log(r))
 
-            })
+            // })
 
             console.log("LOADED")
         })
