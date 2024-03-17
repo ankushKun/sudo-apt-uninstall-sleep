@@ -80,7 +80,7 @@ def GradientBoosting_Classifier_gui(train,query,train_cols): # train is train da
 	print (grad.fit(train[train_cols], train['malicious']))
 	query['result']=grad.predict(query[train_cols])
 	print (query[['URL','result']].head(2))
-	return query['result']
+	return str(query['result'])
 
     
     
