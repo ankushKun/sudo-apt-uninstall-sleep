@@ -3,7 +3,7 @@
   "name": "Anti Sus Browsing",
   "description": "A chrome extension to detect sus activity in online browsing",
   "version":"1.0.0",
-  "permissions":["storage","tabs","scripting"],
+  "permissions":["storage","tabs","activeTab","scripting"],
   "action": {
     "default_popup": "index.html",
     "default_icon": "logo512.png"
