@@ -1,4 +1,6 @@
 import json
+import main
+import trainer as tr
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -15,10 +17,12 @@ def index():
 @app.route("/check", methods=["POST"])
 def check():
     data = request.get_json(force=True)
-    html_source = data["html_source"]
-    print(html_source)
+    url_source = data["url"]
+    main.process_test_url(url_source,'gui_url_features.csv')
+    return_ans = tr.gui_caller('train_Data.csv','gui_url_features.csv')
+    print(url_source)
 
-    return "IDK"
+    return return_ans
 
 
 if __name__ == "__main__":

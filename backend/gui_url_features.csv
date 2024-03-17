@@ -1,0 +1,2 @@
+URL,rank_host,rank_country,host,path,Length_of_url,Length_of_host,No_of_dots,avg_token_length,token_count,largest_token,avg_domain_token_length,domain_token_count,largest_domain,avg_path_token,path_token_count,largest_path,sec_sen_word_cnt,IPaddress_presence,ASNno,safebrowsing
+https://ankushkun.github.io,-1,-1,ankushkun.github.io,,27,19,2,5.5,4,9,5.666666666666667,3,9,0,0,0,0,0,-1,-1
