@@ -106,7 +106,7 @@ function createWindow() {
             const sussy = await axios.post(BACKEND_BASE + "/check", { url: curl })
             const isSus = sussy.data.split("\n")[0].split(" ").reverse()[0];
             console.log(isSus)
-            if (isSus == 1) {
+            if (isSus > 0.018) {
                 new Notification({ title: "Suspicious activity detected", body: "Please stay alert" }).show()
                 chat?.webContents.send('isSus', true)
             } else {
